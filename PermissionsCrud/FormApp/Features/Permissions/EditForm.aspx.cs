@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Web.UI;
 
-namespace FormApp
+namespace FormApp.Features.Permissions
 {
-    public partial class SiteMaster : MasterPage
+    public partial class EditForm : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
