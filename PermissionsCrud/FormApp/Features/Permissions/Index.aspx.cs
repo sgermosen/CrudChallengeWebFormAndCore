@@ -24,38 +24,47 @@ namespace FormApp.Features.Permissions
 
         protected void FillGrid()
         {
-            var permissions = _dataService.GetPermissions().OrderByDescending(x => x.Id).ToList();
-
-            DataTable dt = permissions.ToDataTable();
-            if (dt.Rows.Count != 0 && Convert.ToInt32(dt.Rows[0][0].ToString()) != 0)
+            var request = _dataService.GetPermissions();
+            if (request.IsSuccess)
             {
-                //if (permissions != null)
-                //{ 
-                //DataTable dtWithJson = Newtonsoft.Json.JsonConvert.DeserializeObject<DataTable>(Newtonsoft.Json.JsonConvert.SerializeObject(permissions)); //it have problems with navigation properties
-                //var dtWithFast = new DataTable();
-                //using (var reader = ObjectReader.Create(permissions))
-                //{
-                //    dtWithFast.Load(reader);
-                //} 
-                //var dtClasic = new DataTable();
-                //dtClasic = permissions.ToDataTable(); 
-                //gv.DataSource = dtWithJson;
-                gv.DataSource = dt;
-                //   gv.DataSource = dtClasic;
-                //  gv.DataSource = dtWithFast; //The items are sorted in a undetermined way
-                gv.DataBind();
+                var permissions = request.Value.OrderByDescending(x => x.Id).ToList();
+
+                DataTable dt = permissions.ToDataTable();
+                if (dt.Rows.Count != 0 && Convert.ToInt32(dt.Rows[0][0].ToString()) != 0)
+                {
+                    //if (permissions != null)
+                    //{ 
+                    //DataTable dtWithJson = Newtonsoft.Json.JsonConvert.DeserializeObject<DataTable>(Newtonsoft.Json.JsonConvert.SerializeObject(permissions)); //it have problems with navigation properties
+                    //var dtWithFast = new DataTable();
+                    //using (var reader = ObjectReader.Create(permissions))
+                    //{
+                    //    dtWithFast.Load(reader);
+                    //} 
+                    //var dtClasic = new DataTable();
+                    //dtClasic = permissions.ToDataTable(); 
+                    //gv.DataSource = dtWithJson;
+                    gv.DataSource = dt;
+                    //   gv.DataSource = dtClasic;
+                    //  gv.DataSource = dtWithFast; //The items are sorted in a undetermined way
+                    gv.DataBind();
+                }
+                else
+                {
+                    dt.Rows.Add(dt.NewRow());
+                    gv.DataSource = dt;
+                    gv.DataBind();
+                    int columncount = gv.Rows[0].Cells.Count;
+                    gv.Rows[0].Cells.Clear();
+                    gv.Rows[0].Cells.Add(new TableCell());
+                    gv.Rows[0].Cells[0].ColumnSpan = columncount;
+                    gv.Rows[0].Cells[0].Text = "No data found";
+                }
             }
             else
             {
-                dt.Rows.Add(dt.NewRow());
-                gv.DataSource = dt;
-                gv.DataBind();
-                int columncount = gv.Rows[0].Cells.Count;
-                gv.Rows[0].Cells.Clear();
-                gv.Rows[0].Cells.Add(new TableCell());
-                gv.Rows[0].Cells[0].ColumnSpan = columncount;
-                gv.Rows[0].Cells[0].Text = "No data found";
+                //TODO: Handler Error
             }
+           
 
         }
         static int selectedId;
@@ -78,8 +87,16 @@ namespace FormApp.Features.Permissions
         {
 
             selectedId = Convert.ToInt32(gv.Rows[e.RowIndex].Cells[0].Text.ToString());
-            if (_dataService.DeletePermission(selectedId))
+            var request = _dataService.DeletePermission(selectedId);
+            if (request.IsSuccess)
+            {
                 FillGrid();
+            }
+            else
+            {
+                //TODO: Handler Error
+            } 
+               
         }
 
 

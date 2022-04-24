@@ -17,10 +17,16 @@ namespace FormApp.Features.Permissions
             if (!Page.IsPostBack)
             {
                 var permissionTypes = _dataService.GetPermissionTypes();
-
-                foreach (var item in permissionTypes)
+                if (permissionTypes.IsSuccess)
                 {
-                    ddlPermissionType.Items.Add(item.Description);
+                    foreach (var item in permissionTypes.Value)
+                    {
+                        ddlPermissionType.Items.Add(item.Description);
+                    }
+                }
+                else
+                {
+                    //TODO: Handler Error
                 }
             }
 
@@ -40,9 +46,15 @@ namespace FormApp.Features.Permissions
                 DateFromView = Request.Form[calPermissionDate.UniqueID],
                 PermissionTypeId = ddlPermissionType.SelectedIndex
             };
-
-            if (_dataService.CreatePermission(model))
+            var request = _dataService.CreatePermission(model);
+            if (request.IsSuccess)
                 Server.Transfer($"~/Features/Permissions/{nameof(Index)}.aspx");
+            else
+            {
+                //TODO: Handler Error
+            }
+
+
         }
     }
 }

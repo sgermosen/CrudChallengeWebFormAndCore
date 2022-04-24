@@ -17,34 +17,57 @@ namespace FormApp.Features.Permissions
             if (!Page.IsPostBack)
             {
                 var permissionIdRoute = Convert.ToInt32(Request.QueryString["permissionId"]);
-                var permissionIdSession = _dataService.GetSelectedPermissionId();
-
-                if (permissionIdRoute == 0 || permissionIdSession == 0 || permissionIdSession != permissionIdRoute)
-                    Server.Transfer($"~/{nameof(NoFoundPage)}.aspx");
-                else
+                var request = _dataService.GetSelectedPermissionId();
+                if (request.IsSuccess)
                 {
-                    var permissionTypes = _dataService.GetPermissionTypes();
+                    var permissionIdSession = request.Value;
 
-                    foreach (var item in permissionTypes)
-                    {
-                        ddlPermissionType.Items.Add(item.Description);
-                    }
-                    var permission = _dataService.GetPermission(permissionIdSession);
-                    if (permission.Id != 0)
-                    {
-                        txtEmployeeName.Text = permission.EmployeeName;
-                        txtEmployeeLastname.Text = permission.EmployeeLastname;
+                    if (permissionIdRoute == 0 || permissionIdSession == 0 || permissionIdSession != permissionIdRoute)
+                        Server.Transfer($"~/{nameof(NoFoundPage)}.aspx");
+                    else
+                    { 
+                        var requestTypes = _dataService.GetPermissionTypes();
+                        if (requestTypes.IsSuccess)
+                        {
+                            var permissionTypes = requestTypes.Value;
 
-                        calPermissionDate.Text = permission.PermissionDate.ToString("dd/MM/yyyy");
-                        ddlPermissionType.SelectedIndex = (permission.PermissionTypeId - 1);
+                            foreach (var item in permissionTypes)
+                            {
+                                ddlPermissionType.Items.Add(item.Description);
+                            }
+                            var requestPermission = _dataService.GetPermission(permissionIdSession);
+                            if (requestPermission.IsSuccess)
+                            {
+                                var permission = requestPermission.Value;
+                                if (permission.Id != 0)
+                                {
+                                    txtEmployeeName.Text = permission.EmployeeName;
+                                    txtEmployeeLastname.Text = permission.EmployeeLastname;
 
+                                    calPermissionDate.Text = permission.PermissionDate.ToString("dd/MM/yyyy");
+                                    ddlPermissionType.SelectedIndex = (permission.PermissionTypeId - 1);
+                                }
+                                else
+                                {
+                                    //TODO: Handle error
+                                }
+                            }
+                            else
+                            {
+                                //TODO: Handle error
+                            }
+                        }
+                        else
+                        {
+                            //TODO: Handle error
+                        } 
                     }
                 }
-
-
-
-            }
-
+                else
+                {
+                    //TODO: Handler Error
+                } 
+            } 
         }
 
         protected void btnCancel_Click(object sender, EventArgs e)
@@ -54,7 +77,7 @@ namespace FormApp.Features.Permissions
         }
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            var permissionId = _dataService.GetSelectedPermissionId();
+            var permissionId =  Convert.ToInt32(Request.QueryString["permissionId"]);
 
             var model = new PermissionSave
             {
@@ -64,9 +87,13 @@ namespace FormApp.Features.Permissions
                 PermissionTypeId = ddlPermissionType.SelectedIndex,
                 PermissionId = permissionId
             };
-
-            if (_dataService.UpdatePermission(permissionId, model)) 
+            var request = _dataService.UpdatePermission(permissionId, model);
+            if (request.IsSuccess)
                 Response.Redirect($"~/Features/Permissions/Details.aspx?permissionId={permissionId}");
+            else
+            {
+                //TODO: Handler Error
+            }
         }
     }
 }

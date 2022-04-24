@@ -233,6 +233,7 @@
     <Compile Include="Models\Permission.cs" />
     <Compile Include="Models\PermissionSave.cs" />
     <Compile Include="Models\PermissionType.cs" />
+    <Compile Include="Models\Response.cs" />
     <Compile Include="NoFoundPage.aspx.cs">
       <DependentUpon>NoFoundPage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

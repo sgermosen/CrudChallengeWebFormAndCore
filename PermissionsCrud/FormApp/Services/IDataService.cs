@@ -5,13 +5,13 @@ namespace FormApp.Services
 {
     public interface IDataService
     {
-        List<Permission> GetPermissions();
-        List<PermissionType> GetPermissionTypes();
-        Permission GetPermission(int id);
-        bool DeletePermission(int selectedId);
+        Response<List<Permission>> GetPermissions();
+        Response<List<PermissionType>> GetPermissionTypes();
+        Response<Permission> GetPermission(int id);
+        Response<bool> DeletePermission(int selectedId);
         void SetPermissionId(int v);
-        int GetSelectedPermissionId();
-        bool UpdatePermission(int permissionId, PermissionSave model);
-        bool CreatePermission(PermissionSave model);
+        Response<int> GetSelectedPermissionId();
+        Response<bool> UpdatePermission(int permissionId, PermissionSave model);
+        Response<bool> CreatePermission(PermissionSave model);
     }
 }

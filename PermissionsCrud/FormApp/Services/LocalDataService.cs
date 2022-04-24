@@ -8,89 +8,121 @@ namespace FormApp.Services
 {
     public class LocalDataService : IDataService
     {
-        public List<Permission> GetPermissions()
+
+        public Response<List<Permission>> GetPermissions()
         {
             var permissions = (List<Permission>)HttpContext.Current.Session["Permissions"];
             if (permissions == null)
                 permissions = new List<Permission>();   // new Permission{Id = 0, EmployeeLastname =string.Empty, EmployeeName =string.Empty, PermissionDate = new DateTime(), PermissionType  = new PermissionType { Id= 1, Description = string.Empty }, PermissionTypeId =1 } };
-            return permissions;
+            return new Response<List<Permission>> { IsSuccess = true, Value = permissions };
         }
 
-        public List<PermissionType> GetPermissionTypes()
+        public Response<List<PermissionType>> GetPermissionTypes()
         {
-            var permissions = (List<PermissionType>)HttpContext.Current.Session["PermissionTypes"];
-            if (permissions == null)
-                permissions = new List<PermissionType>();
-            return permissions;
+            var permissionsTypes = (List<PermissionType>)HttpContext.Current.Session["PermissionTypes"];
+            if (permissionsTypes == null)
+                permissionsTypes = new List<PermissionType>();
+            return new Response<List<PermissionType>> { IsSuccess = true, Value = permissionsTypes };
         }
 
-        public PermissionType GetPermissionType(int id)
+        public Response<PermissionType> GetPermissionType(int id)
         {
-            var permissionType = GetPermissionTypes().Find(x => x.Id == id);
-            if (permissionType == null)
-                return new PermissionType();
-            return permissionType;
-        }
-        public Permission GetPermission(int id)
-        {
-            var permission = GetPermissions().Find(x => x.Id == id);
-            if (permission == null)
-                return new Permission();
-            return permission;
+            var request = GetPermissionTypes();
+            if (request.IsSuccess)
+            {
+                var permissionType = request.Value.Find(x => x.Id == id);
+                if (permissionType != null)
+                    return new Response<PermissionType> { IsSuccess = true, Value = permissionType };
+            }
+            return new Response<PermissionType> { IsSuccess = true, Error = "We coulnt find this object" };
         }
 
-        public bool DeletePermission(int selectedId)
+        public Response<Permission> GetPermission(int id)
         {
-            var permissions = GetPermissions();
-            var permissionDb = permissions.Find(x => x.Id == selectedId);
-            permissions.Remove(permissionDb);
-            HttpContext.Current.Session["Permissions"] = permissions;
-            return true;
+            var request = GetPermissions();
+            if (request.IsSuccess)
+            {
+                var permission = request.Value.Find(x => x.Id == id);
+                if (permission != null)
+                    return new Response<Permission> { IsSuccess = true, Value = permission };
+            }
+            return new Response<Permission> { IsSuccess = true, Error = "We coulnt find this object" };
+        }
+
+        public Response<bool> DeletePermission(int selectedId)
+        {
+            var request = GetPermissions();
+            if (request.IsSuccess)
+            {
+                var permissions = request.Value;
+                var permission = permissions.Find(x => x.Id == selectedId);
+                if (permission != null)
+                {
+                    permissions.Remove(permission);
+                    HttpContext.Current.Session["Permissions"] = permissions;
+                    return new Response<bool> { IsSuccess = true, Value = true };
+                }
+            }
+            return new Response<bool> { IsSuccess = false, Error = "We coulnt delete this object" };
+
         }
 
         public void SetPermissionId(int v) => HttpContext.Current.Session["PermissionId"] = v;
 
-        public int GetSelectedPermissionId() => Convert.ToInt32(HttpContext.Current.Session["PermissionId"]);
+        public Response<int> GetSelectedPermissionId() => new Response<int> { IsSuccess = true, Value = Convert.ToInt32(HttpContext.Current.Session["PermissionId"]) };
 
-        public bool UpdatePermission(int permissionId, PermissionSave model)
+        public Response<bool> UpdatePermission(int permissionId, PermissionSave model)
         {
-            var permissions = GetPermissions();
-            var permissionDb = permissions.Find(x => x.Id == permissionId);
-            if (permissionDb != null)
+            var request = GetPermissions();
+            if (request.IsSuccess)
             {
-                permissions.Remove(permissionDb);
-                PermissionModelToPermission(model, permissionDb);
+                var permissions = request.Value;
+                var permissionDb = permissions.Find(x => x.Id == permissionId);
+                if (permissionDb != null)
+                {
+                    permissions.Remove(permissionDb);
+                    PermissionModelToPermission(model, permissionDb);
 
-                permissions.Add(permissionDb);
-                HttpContext.Current.Session["Permissions"] = permissions;
-                return true;
+                    permissions.Add(permissionDb);
+                    HttpContext.Current.Session["Permissions"] = permissions;
+                    return new Response<bool> { IsSuccess = true, Value = true };
+                }
             }
-            return false;
+            return new Response<bool> { IsSuccess = false, Error = "We coulnt update this object" };
         }
 
-        public bool CreatePermission(PermissionSave model)
+        public Response<bool> CreatePermission(PermissionSave model)
         {
-            var permissions = GetPermissions();
-            var newId = permissions.Count + 1;
-            var permissionDb = new Permission();
+            var request = GetPermissions();
+            if (request.IsSuccess)
+            {
+                var permissions = request.Value;
+                var newId = permissions.Count + 1;
+                var permissionDb = new Permission();
 
-            PermissionModelToPermission(model, permissionDb);
+                PermissionModelToPermission(model, permissionDb);
 
-            permissionDb.Id = newId;
-            permissions.Add(permissionDb);
-            HttpContext.Current.Session["Permissions"] = permissions;
-            SetPermissionId(0);
-            return true;
+                permissionDb.Id = newId;
+                permissions.Add(permissionDb);
+                HttpContext.Current.Session["Permissions"] = permissions;
+                SetPermissionId(0);
+                return new Response<bool> { IsSuccess = true, Value = true };
+
+            }
+            return new Response<bool> { IsSuccess = false, Error = "We coulnt create this object" };
 
         }
 
         private void PermissionModelToPermission(PermissionSave model, Permission permissionDb)
         {
+
+            var requestTypes = GetPermissionType(model.PermissionTypeId);
+            if (requestTypes.IsSuccess)
+                permissionDb.PermissionType = requestTypes.Value;
             permissionDb.EmployeeLastname = model.EmployeeLastname;
             permissionDb.EmployeeName = model.EmployeeName;
             permissionDb.PermissionDate = Dates.ConvertToDate(model.DateFromView);
             permissionDb.PermissionTypeId = model.PermissionTypeId;
-            permissionDb.PermissionType = GetPermissionType(model.PermissionTypeId);
         }
 
 

@@ -5,32 +5,32 @@ namespace FormApp.Services
 {
     public class ApiService : IDataService
     {
-        public bool CreatePermission(PermissionSave model)
+        public Response<bool> CreatePermission(PermissionSave model)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool DeletePermission(int selectedId)
+        public Response<bool> DeletePermission(int selectedId)
         {
             throw new System.NotImplementedException();
         }
 
-        public Permission GetPermission(int id)
+        public Response<Permission> GetPermission(int id)
         {
             throw new System.NotImplementedException();
         }
 
-        public List<Permission> GetPermissions()
+        public Response<List<Permission>> GetPermissions()
         {
             throw new System.NotImplementedException();
         }
 
-        public List<PermissionType> GetPermissionTypes()
+        public Response<List<PermissionType>> GetPermissionTypes()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetSelectedPermissionId()
+        public Response<int> GetSelectedPermissionId()
         {
             throw new System.NotImplementedException();
         }
@@ -40,7 +40,7 @@ namespace FormApp.Services
             throw new System.NotImplementedException();
         }
 
-        public bool UpdatePermission(int permissionId, PermissionSave model)
+        public Response<bool> UpdatePermission(int permissionId, PermissionSave model)
         {
             throw new System.NotImplementedException();
         }
