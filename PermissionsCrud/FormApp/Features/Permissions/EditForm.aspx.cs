@@ -1,8 +1,6 @@
 ﻿using FormApp.Models;
 using FormApp.Services;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace FormApp.Features.Permissions
 {
@@ -19,30 +17,30 @@ namespace FormApp.Features.Permissions
             if (!Page.IsPostBack)
             {
                 var permissionIdRoute = Convert.ToInt32(Request.QueryString["permissionId"]);
-                var permissionIdSession = Convert.ToInt32(Session["PermissionId"]);
+                var permissionIdSession = _dataService.GetSelectedPermissionId();
 
                 if (permissionIdRoute == 0 || permissionIdSession == 0 || permissionIdSession != permissionIdRoute)
                     Server.Transfer($"~/{nameof(NoFoundPage)}.aspx");
                 else
                 {
-                    var permissionTypes = _dataService.GetPermissionTypess();
+                    var permissionTypes = _dataService.GetPermissionTypes();
 
                     foreach (var item in permissionTypes)
                     {
-                        ddlPermissionType.Items.Add( item.Description);
+                        ddlPermissionType.Items.Add(item.Description);
                     }
                     var permission = _dataService.GetPermission(permissionIdSession);
                     if (permission.Id != 0)
                     {
                         txtEmployeeName.Text = permission.EmployeeName;
                         txtEmployeeLastname.Text = permission.EmployeeLastname;
-                        
+
                         calPermissionDate.Text = permission.PermissionDate.ToString("dd/MM/yyyy");
                         ddlPermissionType.SelectedIndex = (permission.PermissionTypeId - 1);
 
                     }
                 }
-              
+
 
 
             }
@@ -56,27 +54,19 @@ namespace FormApp.Features.Permissions
         }
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            var permissionId = Convert.ToInt32(Session["PermissionId"]);
-            var permissions = _dataService.GetPermissions();
-            var permissionDb = permissions.Find(x => x.Id == permissionId);
-            if (permissionDb != null)
+            var permissionId = _dataService.GetSelectedPermissionId();
+
+            var model = new PermissionSave
             {
-                permissions.Remove(permissionDb);
-                //permissionDb.PermissionDate = ManageDate(txtPermissionDate.Text);
-                permissionDb.EmployeeLastname = txtEmployeeLastname.Text;
-                permissionDb.EmployeeName = txtEmployeeName.Text;
-                string dateFromView = Request.Form[calPermissionDate.UniqueID];
-                DateTime permissionDate;
-                bool temp = DateTime.TryParseExact(dateFromView, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out permissionDate);
-                permissionDb.PermissionDate = permissionDate;
-                  permissionDb.PermissionTypeId = ddlPermissionType.SelectedIndex + 1;
-                permissionDb.PermissionType =  ((List<PermissionType>)Session["PermissionTypes"]).Find(x=> x.Id == permissionDb.PermissionTypeId) ;
+                EmployeeLastname = txtEmployeeLastname.Text,
+                EmployeeName = txtEmployeeName.Text,
+                DateFromView = Request.Form[calPermissionDate.UniqueID],
+                PermissionTypeId = ddlPermissionType.SelectedIndex,
+                PermissionId = permissionId
+            };
 
-                permissions.Add(permissionDb);
-                Session["Permissions"] = permissions;
-            }
-
-            Response.Redirect($"~/Features/Permissions/Details.aspx?permissionId={permissionId}");
+            if (_dataService.UpdatePermission(permissionId, model)) 
+                Response.Redirect($"~/Features/Permissions/Details.aspx?permissionId={permissionId}");
         }
     }
 }

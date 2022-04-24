@@ -1,10 +1,12 @@
 ﻿using FormApp.Models;
+using FormApp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Web;
 
 namespace FormApp.Services
 {
-    public class LocalDataService: IDataService
+    public class LocalDataService : IDataService
     {
         public List<Permission> GetPermissions()
         {
@@ -14,7 +16,7 @@ namespace FormApp.Services
             return permissions;
         }
 
-        public List<PermissionType> GetPermissionTypess()
+        public List<PermissionType> GetPermissionTypes()
         {
             var permissions = (List<PermissionType>)HttpContext.Current.Session["PermissionTypes"];
             if (permissions == null)
@@ -22,6 +24,13 @@ namespace FormApp.Services
             return permissions;
         }
 
+        public PermissionType GetPermissionType(int id)
+        {
+            var permissionType = GetPermissionTypes().Find(x => x.Id == id);
+            if (permissionType == null)
+                return new PermissionType();
+            return permissionType;
+        }
         public Permission GetPermission(int id)
         {
             var permission = GetPermissions().Find(x => x.Id == id);
@@ -29,5 +38,61 @@ namespace FormApp.Services
                 return new Permission();
             return permission;
         }
+
+        public bool DeletePermission(int selectedId)
+        {
+            var permissions = GetPermissions();
+            var permissionDb = permissions.Find(x => x.Id == selectedId);
+            permissions.Remove(permissionDb);
+            HttpContext.Current.Session["Permissions"] = permissions;
+            return true;
+        }
+
+        public void SetPermissionId(int v) => HttpContext.Current.Session["PermissionId"] = v;
+
+        public int GetSelectedPermissionId() => Convert.ToInt32(HttpContext.Current.Session["PermissionId"]);
+
+        public bool UpdatePermission(int permissionId, PermissionSave model)
+        {
+            var permissions = GetPermissions();
+            var permissionDb = permissions.Find(x => x.Id == permissionId);
+            if (permissionDb != null)
+            {
+                permissions.Remove(permissionDb);
+                PermissionModelToPermission(model, permissionDb);
+
+                permissions.Add(permissionDb);
+                HttpContext.Current.Session["Permissions"] = permissions;
+                return true;
+            }
+            return false;
+        }
+
+        public bool CreatePermission(PermissionSave model)
+        {
+            var permissions = GetPermissions();
+            var newId = permissions.Count + 1;
+            var permissionDb = new Permission();
+
+            PermissionModelToPermission(model, permissionDb);
+
+            permissionDb.Id = newId;
+            permissions.Add(permissionDb);
+            HttpContext.Current.Session["Permissions"] = permissions;
+            SetPermissionId(0);
+            return true;
+
+        }
+
+        private void PermissionModelToPermission(PermissionSave model, Permission permissionDb)
+        {
+            permissionDb.EmployeeLastname = model.EmployeeLastname;
+            permissionDb.EmployeeName = model.EmployeeName;
+            permissionDb.PermissionDate = Dates.ConvertToDate(model.DateFromView);
+            permissionDb.PermissionTypeId = model.PermissionTypeId;
+            permissionDb.PermissionType = GetPermissionType(model.PermissionTypeId);
+        }
+
+
     }
 }

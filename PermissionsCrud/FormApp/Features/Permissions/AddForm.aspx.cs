@@ -1,8 +1,6 @@
 ﻿using FormApp.Models;
 using FormApp.Services;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace FormApp.Features.Permissions
 {
@@ -18,7 +16,7 @@ namespace FormApp.Features.Permissions
         {
             if (!Page.IsPostBack)
             {
-                var permissionTypes = _dataService.GetPermissionTypess();
+                var permissionTypes = _dataService.GetPermissionTypes();
 
                 foreach (var item in permissionTypes)
                 {
@@ -35,26 +33,16 @@ namespace FormApp.Features.Permissions
         }
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            var permissions = _dataService.GetPermissions();
-            var newId = permissions.Count + 1;
-            string dateFromView = Request.Form[calPermissionDate.UniqueID];
-            DateTime permissionDate;
-            bool temp = DateTime.TryParseExact(dateFromView, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out permissionDate);
-            var permissionTypeId = ddlPermissionType.SelectedIndex + 1;
-            var permissionDb = new Permission
+            var model = new PermissionSave
             {
-                Id = newId,
                 EmployeeLastname = txtEmployeeLastname.Text,
                 EmployeeName = txtEmployeeName.Text,
-                PermissionDate = permissionDate,
-                PermissionTypeId = permissionTypeId,
-                PermissionType = ((List<PermissionType>)Session["PermissionTypes"]).Find(x => x.Id == permissionTypeId)
+                DateFromView = Request.Form[calPermissionDate.UniqueID],
+                PermissionTypeId = ddlPermissionType.SelectedIndex
             };
 
-            permissions.Add(permissionDb);
-            Session["Permissions"] = permissions;
-            Session["PermissionId"] = 0;
-            Server.Transfer($"~/Features/Permissions/{nameof(Index)}.aspx");
+            if (_dataService.CreatePermission(model))
+                Server.Transfer($"~/Features/Permissions/{nameof(Index)}.aspx");
         }
     }
 }

@@ -231,6 +231,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Permission.cs" />
+    <Compile Include="Models\PermissionSave.cs" />
     <Compile Include="Models\PermissionType.cs" />
     <Compile Include="NoFoundPage.aspx.cs">
       <DependentUpon>NoFoundPage.aspx</DependentUpon>
@@ -257,6 +258,7 @@
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Dates.cs" />
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

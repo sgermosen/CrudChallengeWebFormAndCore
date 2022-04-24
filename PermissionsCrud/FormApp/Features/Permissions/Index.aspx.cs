@@ -17,8 +17,8 @@ namespace FormApp.Features.Permissions
             _dataService = dataService;
         }
         protected void Page_Load(object sender, EventArgs e)
-        {
-            Session["PermissionId"] = 0;
+        { 
+            _dataService.SetPermissionId(0);
             FillGrid();
         }
 
@@ -78,11 +78,8 @@ namespace FormApp.Features.Permissions
         {
 
             selectedId = Convert.ToInt32(gv.Rows[e.RowIndex].Cells[0].Text.ToString());
-            var permissions = _dataService.GetPermissions();
-            var permissionDb = permissions.Find(x => x.Id == selectedId);
-            permissions.Remove(permissionDb);
-            Session["Permissions"] = permissions;
-            FillGrid();
+            if (_dataService.DeletePermission(selectedId))
+                FillGrid();
         }
 
 
