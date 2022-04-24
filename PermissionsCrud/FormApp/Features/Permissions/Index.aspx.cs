@@ -17,7 +17,7 @@ namespace FormApp.Features.Permissions
             _dataService = dataService;
         }
         protected void Page_Load(object sender, EventArgs e)
-        { 
+        {
             _dataService.SetPermissionId(0);
             FillGrid();
         }
@@ -64,7 +64,7 @@ namespace FormApp.Features.Permissions
             {
                 //TODO: Handler Error
             }
-           
+
 
         }
         static int selectedId;
@@ -95,8 +95,8 @@ namespace FormApp.Features.Permissions
             else
             {
                 //TODO: Handler Error
-            } 
-               
+            }
+
         }
 
 

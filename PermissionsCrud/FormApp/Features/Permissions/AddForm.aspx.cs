@@ -44,7 +44,7 @@ namespace FormApp.Features.Permissions
                 EmployeeLastname = txtEmployeeLastname.Text,
                 EmployeeName = txtEmployeeName.Text,
                 DateFromView = Request.Form[calPermissionDate.UniqueID],
-                PermissionTypeId = ddlPermissionType.SelectedIndex
+                PermissionTypeId = ddlPermissionType.SelectedIndex + 1
             };
             var request = _dataService.CreatePermission(model);
             if (request.IsSuccess)
