@@ -9,5 +9,7 @@ namespace FormApp.Models
         public string EmployeeLastname { get; set; }
         public int PermissionTypeId { get; set; }
         public DateTime PermissionDate { get; set; }
+        public PermissionType PermissionType { get; set; }
+        public string PermissionDescription => PermissionType != null ? PermissionType.Description : "";
     }
 }

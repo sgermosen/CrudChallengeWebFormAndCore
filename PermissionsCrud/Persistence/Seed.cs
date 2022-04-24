@@ -1,21 +1,23 @@
-﻿using FormApp.Models;
+﻿using Domain.Entities;
 using System;
 using System.Collections.Generic;
-using System.Web.UI;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace FormApp
+namespace Persistence
 {
-    public partial class _Default : Page
+    public class Seed
     {
-        protected void Page_Load(object sender, EventArgs e)
+        public static async Task SeedData(DataContext context)
         {
-            if (Session["Permissions"] == null)
+
+            if (!context.Permissions.Any())
             {
                 var permissionTypes = new List<PermissionType>();
                 permissionTypes.Add(new PermissionType { Id = 1, Description = "Adbsense" });
                 permissionTypes.Add(new PermissionType { Id = 2, Description = "Medical Reason" });
                 permissionTypes.Add(new PermissionType { Id = 3, Description = "Family Themes" });
-                Session["PermissionTypes"] = permissionTypes;
+                await context.PermissionTypes.AddRangeAsync(permissionTypes);
 
                 var permissions = new List<Permission> {
                     new Permission { Id = 1,EmployeeLastname = "Perez", EmployeeName ="Juan",  PermissionDate = DateTime.Now.AddDays(-3), PermissionTypeId = 1, PermissionType = permissionTypes[0] },
@@ -23,8 +25,9 @@ namespace FormApp
                     new Permission {  Id = 3,EmployeeLastname = "Cabrera", EmployeeName ="Grey", PermissionDate = DateTime.Now.AddDays(-3), PermissionTypeId = 1, PermissionType = permissionTypes[1]},
                     new Permission { Id = 4, EmployeeLastname = "Cruz", EmployeeName ="Penelope",  PermissionDate = DateTime.Now.AddDays(-3), PermissionTypeId = 2, PermissionType = permissionTypes[1]},
                 };
-                Session["Permissions"] = permissions;
+                await context.Permissions.AddRangeAsync(permissions);
 
+                await context.SaveChangesAsync();
             }
         }
     }
