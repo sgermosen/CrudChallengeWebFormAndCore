@@ -1,0 +1,15 @@
+﻿using System;
+
+namespace Domain.Entities
+{
+    public class Permission
+    {
+        public int Id { get; set; }
+        public string EmployeeName { get; set; }
+        public string EmployeeLastname { get; set; }
+        public int PermissionTypeId { get; set; }
+        public DateTime PermissionDate { get; set; }
+        public PermissionType PermissionType { get; set; }
+        public string PermissionDescription => PermissionType != null ? PermissionType.Description : "";
+    }
+}

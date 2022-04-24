@@ -6,14 +6,21 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
+using FormApp.Services;
+using Microsoft.AspNet.WebFormsDependencyInjection.Unity;
+using Unity;
 
 namespace FormApp
 {
     public class Global : HttpApplication
     {
+       
         void Application_Start(object sender, EventArgs e)
         {
-            // Code that runs on application startup
+            var container = this.AddUnity();
+
+            container.RegisterType<IDataService, LocalDataService>();
+
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }

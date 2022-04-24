@@ -44,6 +44,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FastMember, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.5.0\lib\net461\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.WebFormsDependencyInjection.Unity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebFormsDependencyInjection.Unity.1.0.0\lib\Net472\Microsoft.AspNet.WebFormsDependencyInjection.Unity.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
@@ -82,6 +88,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Abstractions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Abstractions.3.3.0\lib\net47\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.8.6.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Container.5.8.6\lib\net47\Unity.Container.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
@@ -128,8 +140,15 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="NoFoundPage.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\dtables\bootstrap.css" />
+    <Content Include="Scripts\dtables\dataTables.bootstrap4.min.css" />
+    <Content Include="Scripts\dtables\dataTables.bootstrap4.min.js" />
+    <Content Include="Scripts\dtables\dataTables.select.min.js" />
+    <Content Include="Scripts\dtables\jquery.dataTables.min.js" />
+    <Content Include="Scripts\dtables\select.bootstrap4.min.css" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -179,6 +198,7 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\DatatableExtensions.cs" />
     <Compile Include="Features\Permissions\EditForm.aspx.cs">
       <DependentUpon>EditForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -210,7 +230,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Permission.cs" />
+    <Compile Include="Models\PermissionType.cs" />
+    <Compile Include="NoFoundPage.aspx.cs">
+      <DependentUpon>NoFoundPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NoFoundPage.aspx.designer.cs">
+      <DependentUpon>NoFoundPage.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ApiService.cs" />
+    <Compile Include="Services\IDataService.cs" />
+    <Compile Include="Services\LocalDataService.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -235,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Controls\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -246,6 +279,12 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{948bec67-d1a2-4444-adb8-fe6bdf149927}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
