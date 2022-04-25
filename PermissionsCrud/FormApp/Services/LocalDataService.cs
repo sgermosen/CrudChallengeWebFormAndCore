@@ -12,9 +12,10 @@ namespace FormApp.Services
         public Response<List<Permission>> GetPermissions()
         {
             var permissions = (List<Permission>)HttpContext.Current.Session["Permissions"];
-            if (permissions == null)
-                permissions = new List<Permission>();   // new Permission{Id = 0, EmployeeLastname =string.Empty, EmployeeName =string.Empty, PermissionDate = new DateTime(), PermissionType  = new PermissionType { Id= 1, Description = string.Empty }, PermissionTypeId =1 } };
-            return new Response<List<Permission>> { IsSuccess = true, Value = permissions };
+            if (permissions != null)
+                return new Response<List<Permission>> { IsSuccess = true, Value = permissions };
+            permissions = new List<Permission>();   // new Permission{Id = 0, EmployeeLastname =string.Empty, EmployeeName =string.Empty, PermissionDate = new DateTime(), PermissionType  = new PermissionType { Id= 1, Description = string.Empty }, PermissionTypeId =1 } };
+            return new Response<List<Permission>> { IsSuccess = false, Value = permissions, Error = "Error retreaving data" };
         }
 
         public Response<List<PermissionType>> GetPermissionTypes()

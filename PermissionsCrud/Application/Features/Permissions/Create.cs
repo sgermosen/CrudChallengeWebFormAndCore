@@ -3,6 +3,7 @@ using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Persistence;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +33,10 @@ namespace Application.Features.Permissions
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-
+                if(request.Permission.Id ==0)
+                {
+                    request.Permission.Id = _context.Permissions.Count() + 1;
+                }
                 _context.Permissions.Add(request.Permission);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create permission");

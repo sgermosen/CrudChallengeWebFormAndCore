@@ -26,14 +26,14 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateActivity(int id, Permission permission)
+        public async Task<IActionResult> UpdatePermission(int id, Permission permission)
         {
             permission.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Permission = permission }));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActivity(int id)
+        public async Task<IActionResult> DeletePermission(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
         }
